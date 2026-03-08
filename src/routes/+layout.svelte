@@ -19,6 +19,11 @@ let { children } = $props();
 	box-sizing: border-box;
 }
 
+:global(:focus-visible) {
+	outline: 2px solid #f97316;
+	outline-offset: 2px;
+}
+
 :global(body) {
 	font-family:
 		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

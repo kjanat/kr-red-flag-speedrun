@@ -55,12 +55,17 @@ const difficultyLabels = {
 } as const;
 </script>
 
-<div class="results">
+<div class="results" role="region" aria-label="Resultaten">
 	<h1 class="title">Ronde klaar</h1>
 	<p class="level">{difficultyLabels[result.difficulty]}</p>
 
 	<div class="score-card">
-		<div class="big-score">{result.score}</div>
+		<div
+			class="big-score"
+			aria-label="Score: {result.score} van {result.maxPossibleScore}"
+		>
+			{result.score}
+		</div>
 		<div class="score-detail">van {result.maxPossibleScore} mogelijk</div>
 		<div class="stats">
 			<span>{correctCount}/{totalCount} correct ({pct}%)</span>

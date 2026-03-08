@@ -30,7 +30,7 @@ const levels: { id: Difficulty; label: string; description: string }[] = [
 	<h1 class="title">Red Flag Speedrun</h1>
 	<p class="subtitle">Herken alarmsignalen onder tijdsdruk</p>
 
-	<div class="levels">
+	<div class="levels" role="group" aria-label="Kies moeilijkheidsgraad">
 		{#each levels as level}
 			<button class="level-btn" onclick={() => onstart(level.id)}>
 				<span class="level-name">{level.label}</span>

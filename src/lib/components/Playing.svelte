@@ -49,23 +49,38 @@ function handleKey(e: KeyboardEvent) {
 <div class="playing">
 	<div class="header">
 		<span class="counter">{index + 1} / {total}</span>
-		<div class="progress-bar">
+		<div
+			class="progress-bar"
+			role="progressbar"
+			aria-valuenow={index + 1}
+			aria-valuemin={1}
+			aria-valuemax={total}
+			aria-label="Scenario {index + 1} van {total}"
+		>
 			<div class="progress-fill" style:width="{(index / total) * 100}%"></div>
 		</div>
-		<span class="timer" class:slow={elapsed > 10000}>{
+		<span class="timer" class:slow={elapsed > 10000} aria-hidden="true">{
 			formatTime(elapsed)
 		}</span>
 	</div>
 
-	<div class="scenario-card">
+	<div class="scenario-card" aria-live="assertive" aria-atomic="true">
 		<p class="presentation">{scenario.presentation}</p>
 	</div>
 
 	<div class="actions">
-		<button class="btn alarm" onclick={() => onanswer('alarm')}>
+		<button
+			class="btn alarm"
+			onclick={() => onanswer('alarm')}
+			aria-label="Alarm — patiënt doorverwijzen"
+		>
 			ALARM
 		</button>
-		<button class="btn safe" onclick={() => onanswer('safe')}>
+		<button
+			class="btn safe"
+			onclick={() => onanswer('safe')}
+			aria-label="Safe — patiënt is veilig"
+		>
 			SAFE
 		</button>
 	</div>
