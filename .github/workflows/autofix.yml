@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: kjanat/install-shfmt@v1
+      - uses: kjanat/install-dprint@v1
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
       - run: dprint fmt --allow-no-files --diff --excludes ".github"
       - uses: autofix-ci/action@v1
