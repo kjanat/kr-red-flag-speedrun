@@ -12,8 +12,9 @@ export default defineConfig({
 			devMode: 'same',
 		}),
 		svg({
-			input: 'src/lib/assets/favicon.svg',
-			emit: { source: true, inject: true },
+			input: './src/lib/assets/favicon.svg',
+			emit: { source: true, inject: 'minimal' },
+			dev: { injection: 'shim' },
 		}),
-	],
+	]
 });
