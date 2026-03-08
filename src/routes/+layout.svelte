@@ -52,92 +52,134 @@ function toggleTheme() {
 </button>
 
 <style>
+/*
+ * ── Color system ───────────────────────────────────────
+ * Primitives are hand-tuned per theme. Everything else is
+ * derived via color-mix(in oklch, …) — perceptually uniform
+ * interpolation means hover/bg/muted states stay coherent
+ * when seeds or primitives change.
+ *
+ * Theme-agnostic derivations (surface-hover, text-muted,
+ * focus, semantic borders) live here once; CSS resolves
+ * var() references against whichever primitive wins the
+ * cascade, so light overrides propagate automatically.
+ */
+
 /* ── Dark (default) ─────────────────────────────────── */
 :global(:root) {
 	color-scheme: dark;
+
+	/* Primitives */
 	--color-bg: oklch(20.77% 0.0398 265.75);
 	--color-surface: oklch(27.95% 0.0368 260.03);
-	--color-surface-hover: oklch(32.1% 0.0433 255.5);
 	--color-border: oklch(37.17% 0.0392 257.29);
 	--color-text: oklch(92.88% 0.0126 255.51);
 	--color-text-strong: oklch(96.83% 0.0069 247.9);
-	--color-text-muted: oklch(71.07% 0.0351 256.79);
 	--color-text-soft: oklch(55.44% 0.0407 257.42);
 	--color-accent-a: oklch(63.68% 0.2078 25.33);
 	--color-accent-b: oklch(70.49% 0.1867 47.6);
-	--color-danger-border: oklch(57.71% 0.2152 27.33);
-	--color-danger-bg: oklch(39.58% 0.1331 25.72);
-	--color-danger-bg-hover: oklch(44.37% 0.1613 26.9);
+
+	/* Derived — theme-agnostic, re-evaluates when primitives change */
+	--color-surface-hover: color-mix(
+		in oklch,
+		var(--color-surface) 93%,
+		var(--color-text)
+	);
+	--color-text-muted: color-mix(
+		in oklch,
+		var(--color-text) 70%,
+		var(--color-bg)
+	);
+	--color-focus: var(--color-accent-b);
+
+	/* Semantic seeds — one source hue per family */
+	--_danger: oklch(57.71% 0.2152 27.33);
+	--_success: oklch(62.71% 0.1699 149.21);
+	--_warning: oklch(76.86% 0.1647 70.08);
+
+	/* Semantic — border = seed (auto-adapts), bg derived, text hand-tuned */
+	--color-danger-border: var(--_danger);
+	--color-danger-bg: color-mix(in oklch, var(--_danger) 69%, black);
+	--color-danger-bg-hover: color-mix(in oklch, var(--_danger) 77%, black);
 	--color-danger-text: oklch(80.77% 0.1035 19.57);
-	--color-success-border: oklch(62.71% 0.1699 149.21);
-	--color-success-bg: oklch(39.25% 0.0896 152.54);
-	--color-success-bg-hover: oklch(44.79% 0.1083 151.33);
+
+	--color-success-border: var(--_success);
+	--color-success-bg: color-mix(in oklch, var(--_success) 63%, black);
+	--color-success-bg-hover: color-mix(in oklch, var(--_success) 71%, black);
 	--color-success-text: oklch(87.12% 0.1363 154.45);
-	--color-warning-border: oklch(76.86% 0.1647 70.08);
+
+	--color-warning-border: var(--_warning);
 	--color-warning-text: oklch(83.69% 0.1644 84.43);
-	--color-focus: oklch(70.49% 0.1867 47.6);
 }
 
 /*
  * ── Light (paint-synchronous via media query) ──────────
  * Applies immediately for OS-light users before any JS runs.
  * :not([data-theme="dark"]) lets an explicit user override win.
+ *
+ * Only primitives and per-theme derivations here — agnostic
+ * vars (surface-hover, text-muted, focus, semantic borders)
+ * auto-adapt from the :root formulas.
  */
 @media (prefers-color-scheme: light) {
 	:global(:root:not([data-theme="dark"])) {
 		color-scheme: light;
+
 		--color-bg: oklch(98.42% 0.0034 247.86);
 		--color-surface: oklch(100% 0 none);
-		--color-surface-hover: oklch(96.83% 0.0069 247.9);
 		--color-border: oklch(86.9% 0.0198 252.89);
 		--color-text: oklch(20.77% 0.0398 265.75);
 		--color-text-strong: oklch(12.88% 0.0406 264.7);
-		--color-text-muted: oklch(44.55% 0.0374 257.28);
 		--color-text-soft: oklch(55.44% 0.0407 257.42);
 		--color-accent-a: oklch(57.71% 0.2152 27.33);
 		--color-accent-b: oklch(64.61% 0.1943 41.12);
-		--color-danger-border: oklch(50.54% 0.1905 27.52);
-		--color-danger-bg: oklch(93.56% 0.0309 17.72);
-		--color-danger-bg-hover: oklch(88.45% 0.0593 18.33);
+
+		--_danger: oklch(50.54% 0.1905 27.52);
+		--_success: oklch(52.73% 0.1371 150.07);
+		--_warning: oklch(66.58% 0.1574 58.32);
+
+		--color-danger-bg: color-mix(in oklch, var(--_danger) 13%, white);
+		--color-danger-bg-hover: color-mix(in oklch, var(--_danger) 23%, white);
 		--color-danger-text: oklch(44.37% 0.1613 26.9);
-		--color-success-border: oklch(52.73% 0.1371 150.07);
-		--color-success-bg: oklch(96.24% 0.0434 156.74);
-		--color-success-bg-hover: oklch(92.5% 0.0806 155.99);
+
+		--color-success-bg: color-mix(in oklch, var(--_success) 8%, white);
+		--color-success-bg-hover: color-mix(in oklch, var(--_success) 16%, white);
 		--color-success-text: oklch(44.79% 0.1083 151.33);
-		--color-warning-border: oklch(66.58% 0.1574 58.32);
+
 		--color-warning-text: oklch(47.32% 0.1247 46.2);
-		--color-focus: oklch(64.61% 0.1943 41.12);
 	}
 }
 
 /*
  * ── Light (explicit user override via data-theme) ──────
  * Applies after hydration when user has toggled to light on
- * a dark-OS system. Same vars as the media query block.
+ * a dark-OS system. Same primitives + seeds as media query.
  */
 :global(:root[data-theme="light"]) {
 	color-scheme: light;
+
 	--color-bg: oklch(98.42% 0.0034 247.86);
 	--color-surface: oklch(100% 0 none);
-	--color-surface-hover: oklch(96.83% 0.0069 247.9);
 	--color-border: oklch(86.9% 0.0198 252.89);
 	--color-text: oklch(20.77% 0.0398 265.75);
 	--color-text-strong: oklch(12.88% 0.0406 264.7);
-	--color-text-muted: oklch(44.55% 0.0374 257.28);
 	--color-text-soft: oklch(55.44% 0.0407 257.42);
 	--color-accent-a: oklch(57.71% 0.2152 27.33);
 	--color-accent-b: oklch(64.61% 0.1943 41.12);
-	--color-danger-border: oklch(50.54% 0.1905 27.52);
-	--color-danger-bg: oklch(93.56% 0.0309 17.72);
-	--color-danger-bg-hover: oklch(88.45% 0.0593 18.33);
+
+	--_danger: oklch(50.54% 0.1905 27.52);
+	--_success: oklch(52.73% 0.1371 150.07);
+	--_warning: oklch(66.58% 0.1574 58.32);
+
+	--color-danger-bg: color-mix(in oklch, var(--_danger) 13%, white);
+	--color-danger-bg-hover: color-mix(in oklch, var(--_danger) 23%, white);
 	--color-danger-text: oklch(44.37% 0.1613 26.9);
-	--color-success-border: oklch(52.73% 0.1371 150.07);
-	--color-success-bg: oklch(96.24% 0.0434 156.74);
-	--color-success-bg-hover: oklch(92.5% 0.0806 155.99);
+
+	--color-success-bg: color-mix(in oklch, var(--_success) 8%, white);
+	--color-success-bg-hover: color-mix(in oklch, var(--_success) 16%, white);
 	--color-success-text: oklch(44.79% 0.1083 151.33);
-	--color-warning-border: oklch(66.58% 0.1574 58.32);
+
 	--color-warning-text: oklch(47.32% 0.1247 46.2);
-	--color-focus: oklch(64.61% 0.1943 41.12);
 }
 
 :global(*) {
@@ -157,7 +199,7 @@ function toggleTheme() {
 	background:
 		radial-gradient(
 			circle at top right,
-			oklch(70.49% 0.1867 47.6 / 0.1),
+			color-mix(in oklch, var(--color-accent-b) 10%, transparent),
 			transparent 40%
 		),
 		var(--color-bg);
