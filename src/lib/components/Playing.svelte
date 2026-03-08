@@ -108,7 +108,7 @@ function handleKey(e: KeyboardEvent) {
 
 .counter {
 	font-size: 0.875rem;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	white-space: nowrap;
 	font-variant-numeric: tabular-nums;
 }
@@ -116,14 +116,14 @@ function handleKey(e: KeyboardEvent) {
 .progress-bar {
 	flex: 1;
 	height: 6px;
-	background: #334155;
+	background: var(--color-border);
 	border-radius: 3px;
 	overflow: hidden;
 }
 
 .progress-fill {
 	height: 100%;
-	background: linear-gradient(90deg, #ef4444, #f97316);
+	background: linear-gradient(90deg, var(--color-accent-a), var(--color-accent-b));
 	border-radius: 3px;
 	transition: width 0.3s ease;
 }
@@ -131,18 +131,18 @@ function handleKey(e: KeyboardEvent) {
 .timer {
 	font-size: 1rem;
 	font-variant-numeric: tabular-nums;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	min-width: 4ch;
 	text-align: right;
 }
 
 .timer.slow {
-	color: #ef4444;
+	color: var(--color-accent-a);
 }
 
 .scenario-card {
-	background: #1e293b;
-	border: 1px solid #334155;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
 	border-radius: 16px;
 	padding: 2.5rem 2rem;
 	min-height: 140px;
@@ -156,7 +156,7 @@ function handleKey(e: KeyboardEvent) {
 	line-height: 1.6;
 	text-align: center;
 	font-style: italic;
-	color: #f1f5f9;
+	color: var(--color-text-strong);
 }
 
 .actions {
@@ -181,28 +181,28 @@ function handleKey(e: KeyboardEvent) {
 }
 
 .btn.alarm {
-	background: #7f1d1d;
-	color: #fca5a5;
-	border-color: #dc2626;
+	background: var(--color-danger-bg);
+	color: var(--color-danger-text);
+	border-color: var(--color-danger-border);
 }
 
 .btn.alarm:hover {
-	background: #991b1b;
+	background: var(--color-danger-bg-hover);
 }
 
 .btn.safe {
-	background: #14532d;
-	color: #86efac;
-	border-color: #16a34a;
+	background: var(--color-success-bg);
+	color: var(--color-success-text);
+	border-color: var(--color-success-border);
 }
 
 .btn.safe:hover {
-	background: #166534;
+	background: var(--color-success-bg-hover);
 }
 
 .keys-hint {
 	text-align: center;
 	font-size: 0.75rem;
-	color: #475569;
+	color: var(--color-text-soft);
 }
 </style>

@@ -141,14 +141,14 @@ const difficultyLabels = {
 
 .level {
 	text-align: center;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	font-size: 1rem;
 	margin-top: -1rem;
 }
 
 .score-card {
-	background: #1e293b;
-	border: 1px solid #334155;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
 	border-radius: 16px;
 	padding: 2rem;
 	text-align: center;
@@ -158,20 +158,20 @@ const difficultyLabels = {
 	font-size: 3.5rem;
 	font-weight: 800;
 	font-variant-numeric: tabular-nums;
-	background: linear-gradient(135deg, #ef4444, #f97316);
+	background: linear-gradient(135deg, var(--color-accent-a), var(--color-accent-b));
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
 
 .score-detail {
-	color: #64748b;
+	color: var(--color-text-soft);
 	font-size: 0.875rem;
 }
 
 .stats {
 	margin-top: 0.75rem;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
@@ -188,11 +188,11 @@ const difficultyLabels = {
 .section h2 {
 	font-size: 1.1rem;
 	font-weight: 700;
-	color: #f1f5f9;
+	color: var(--color-text-strong);
 }
 
 .weak-hint {
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	font-size: 0.9rem;
 }
 
@@ -204,8 +204,8 @@ const difficultyLabels = {
 }
 
 .weak li {
-	background: #7f1d1d;
-	color: #fca5a5;
+	background: var(--color-danger-bg);
+	color: var(--color-danger-text);
 	padding: 0.25rem 0.75rem;
 	border-radius: 6px;
 	font-size: 0.85rem;
@@ -213,7 +213,7 @@ const difficultyLabels = {
 }
 
 .feedback-card {
-	background: #1e293b;
+	background: var(--color-surface);
 	border-radius: 10px;
 	padding: 1rem;
 	display: flex;
@@ -222,32 +222,32 @@ const difficultyLabels = {
 }
 
 .feedback-card.missed {
-	border-left: 3px solid #dc2626;
+	border-left: 3px solid var(--color-danger-border);
 }
 
 .feedback-card.false-alarm {
-	border-left: 3px solid #f59e0b;
+	border-left: 3px solid var(--color-warning-border);
 }
 
 .fb-presentation {
 	font-style: italic;
-	color: #e2e8f0;
+	color: var(--color-text);
 	font-size: 0.95rem;
 }
 
 .fb-verdict {
 	font-size: 0.8rem;
 	font-weight: 700;
-	color: #f87171;
+	color: var(--color-danger-border);
 }
 
 .false-alarm .fb-verdict {
-	color: #fbbf24;
+	color: var(--color-warning-text);
 }
 
 .fb-explanation {
 	font-size: 0.85rem;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	line-height: 1.5;
 }
 
@@ -255,17 +255,18 @@ const difficultyLabels = {
 	padding: 1rem;
 	font-size: 1.1rem;
 	font-weight: 700;
-	border: 2px solid #334155;
+	border: 2px solid var(--color-border);
 	border-radius: 12px;
-	background: #1e293b;
-	color: #e2e8f0;
+	background: var(--color-surface);
+	color: var(--color-text);
 	cursor: pointer;
 	transition: all 0.15s ease;
 	margin-top: 0.5rem;
 }
 
 .restart-btn:hover {
-	border-color: #ef4444;
+	border-color: var(--color-accent-a);
+	background: var(--color-surface-hover);
 	transform: translateY(-2px);
 }
 </style>

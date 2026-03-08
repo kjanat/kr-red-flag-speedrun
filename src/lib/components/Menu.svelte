@@ -54,14 +54,14 @@ const levels: { id: Difficulty; label: string; description: string }[] = [
 	font-size: 2.5rem;
 	font-weight: 800;
 	margin-bottom: 0.5rem;
-	background: linear-gradient(135deg, #ef4444, #f97316);
+	background: linear-gradient(135deg, var(--color-accent-a), var(--color-accent-b));
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-	color: #94a3b8;
+	color: var(--color-text-muted);
 	margin-bottom: 2.5rem;
 	font-size: 1.1rem;
 }
@@ -77,18 +77,18 @@ const levels: { id: Difficulty; label: string; description: string }[] = [
 	flex-direction: column;
 	gap: 0.25rem;
 	padding: 1.25rem 1.5rem;
-	border: 2px solid #334155;
+	border: 2px solid var(--color-border);
 	border-radius: 12px;
-	background: #1e293b;
-	color: #e2e8f0;
+	background: var(--color-surface);
+	color: var(--color-text);
 	cursor: pointer;
 	transition: all 0.15s ease;
 	text-align: left;
 }
 
 .level-btn:hover {
-	border-color: #ef4444;
-	background: #1e293b;
+	border-color: var(--color-accent-a);
+	background: var(--color-surface-hover);
 	transform: translateY(-2px);
 }
 
@@ -103,12 +103,12 @@ const levels: { id: Difficulty; label: string; description: string }[] = [
 
 .level-desc {
 	font-size: 0.875rem;
-	color: #94a3b8;
+	color: var(--color-text-muted);
 }
 
 .hint {
 	margin-top: 2rem;
 	font-size: 0.8rem;
-	color: #64748b;
+	color: var(--color-text-soft);
 }
 </style>
