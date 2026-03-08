@@ -1,4 +1,4 @@
-# Red Flag Speedrun
+# [Red Flag Speedrun](https://kjanat.github.io/kr-red-flag-speedrun)
 
 Patiënten vliegen voorbij. Jij beslist: **alarm of geen alarm?**
 
