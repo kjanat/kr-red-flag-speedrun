@@ -158,7 +158,11 @@ const difficultyLabels = {
 	font-size: 3.5rem;
 	font-weight: 800;
 	font-variant-numeric: tabular-nums;
-	background: linear-gradient(135deg, var(--color-accent-a), var(--color-accent-b));
+	background: linear-gradient(
+		135deg,
+		var(--color-accent-a),
+		var(--color-accent-b)
+	);
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;

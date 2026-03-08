@@ -123,7 +123,11 @@ function handleKey(e: KeyboardEvent) {
 
 .progress-fill {
 	height: 100%;
-	background: linear-gradient(90deg, var(--color-accent-a), var(--color-accent-b));
+	background: linear-gradient(
+		90deg,
+		var(--color-accent-a),
+		var(--color-accent-b)
+	);
 	border-radius: 3px;
 	transition: width 0.3s ease;
 }

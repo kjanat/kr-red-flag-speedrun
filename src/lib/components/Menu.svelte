@@ -54,7 +54,11 @@ const levels: { id: Difficulty; label: string; description: string }[] = [
 	font-size: 2.5rem;
 	font-weight: 800;
 	margin-bottom: 0.5rem;
-	background: linear-gradient(135deg, var(--color-accent-a), var(--color-accent-b));
+	background: linear-gradient(
+		135deg,
+		var(--color-accent-a),
+		var(--color-accent-b)
+	);
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;

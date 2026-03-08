@@ -73,7 +73,7 @@ function toggleTheme() {
 	--color-focus: #f97316;
 }
 
-:global(:root[data-theme='light']) {
+:global(:root[data-theme="light"]) {
 	--color-bg: #f8fafc;
 	--color-surface: #ffffff;
 	--color-surface-hover: #f1f5f9;
@@ -111,7 +111,12 @@ function toggleTheme() {
 :global(body) {
 	font-family:
 		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-	background: radial-gradient(circle at top right, rgb(249 115 22 / 0.1), transparent 40%),
+	background:
+		radial-gradient(
+			circle at top right,
+			rgb(249 115 22 / 0.1),
+			transparent 40%
+		),
 		var(--color-bg);
 	color: var(--color-text);
 	min-height: 100dvh;
@@ -120,7 +125,59 @@ function toggleTheme() {
 	align-items: center;
 	justify-content: center;
 	padding: 1rem;
-	transition: background-color 0.2s ease;
+	transition: background-color 0.22s ease, color 0.22s ease;
+}
+
+:global(.menu),
+:global(.subtitle),
+:global(.level-btn),
+:global(.level-desc),
+:global(.hint),
+:global(.progress-bar),
+:global(.counter),
+:global(.timer),
+:global(.scenario-card),
+:global(.presentation),
+:global(.keys-hint),
+:global(.score-card),
+:global(.feedback-card),
+:global(.level),
+:global(.weak-hint),
+:global(.fb-presentation),
+:global(.fb-explanation),
+:global(.section h2),
+:global(.restart-btn),
+:global(.theme-toggle) {
+	transition:
+		background-color 0.22s ease,
+		border-color 0.22s ease,
+		color 0.22s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:global(.menu),
+	:global(.subtitle),
+	:global(.level-btn),
+	:global(.level-desc),
+	:global(.hint),
+	:global(.progress-bar),
+	:global(.counter),
+	:global(.timer),
+	:global(.scenario-card),
+	:global(.presentation),
+	:global(.keys-hint),
+	:global(.score-card),
+	:global(.feedback-card),
+	:global(.level),
+	:global(.weak-hint),
+	:global(.fb-presentation),
+	:global(.fb-explanation),
+	:global(.section h2),
+	:global(.restart-btn),
+	:global(.theme-toggle),
+	:global(body) {
+		transition: none;
+	}
 }
 
 .theme-toggle {
