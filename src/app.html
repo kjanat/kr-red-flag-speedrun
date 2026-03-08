@@ -3,6 +3,18 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script>
+		// Blocking: resolve theme before first paint to prevent FOWT.
+		(function() {
+			var s = localStorage.getItem('rf-theme');
+			var t = s === 'light' || s === 'dark'
+				? s
+				: matchMedia('(prefers-color-scheme: light)').matches
+				? 'light'
+				: 'dark';
+			document.documentElement.dataset.theme = t;
+		})();
+		</script>
 		<link
 			rel="icon"
 			href="%sveltekit.assets%/favicon.ico"

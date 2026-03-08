@@ -7,16 +7,13 @@ type Theme = 'dark' | 'light';
 
 const themeStorageKey = 'rf-theme';
 
-let theme = $state<Theme>('dark');
-
-if (browser) {
-	const storedTheme = window.localStorage.getItem(themeStorageKey);
-	if (storedTheme === 'light' || storedTheme === 'dark') {
-		theme = storedTheme;
-	} else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-		theme = 'light';
-	}
+/** Read the theme the inline app.html script already applied to <html>. */
+function initialTheme(): Theme {
+	if (!browser) return 'dark';
+	return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 }
+
+let theme = $state<Theme>(initialTheme());
 
 $effect(() => {
 	if (!browser) return;

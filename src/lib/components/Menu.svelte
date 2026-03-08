@@ -63,7 +63,9 @@ const dev = import.meta.env.DEV;
 
 /** In dev mode, show scenario count per topic */
 const topicCounts: ReadonlyMap<StatKrTopic, number> = new Map(
-	topics.map(({ id }) => [id, scenarios.filter((s) => s.sourceTopic === id).length]),
+	topics.map((
+		{ id },
+	) => [id, scenarios.filter((s) => s.sourceTopic === id).length]),
 );
 
 function buildFilter(): RoundFilter | undefined {
@@ -91,7 +93,9 @@ function buildFilter(): RoundFilter | undefined {
 				onclick={() => toggleTopic(topic.id)}
 				aria-pressed={selectedTopics.includes(topic.id)}
 			>
-				{topic.label}{#if dev}<span class="dev-count">{topicCounts.get(topic.id)}</span>{/if}
+				{topic.label}{#if dev}<span class="dev-count">{
+						topicCounts.get(topic.id)
+					}</span>{/if}
 			</button>
 		{/each}
 	</div>
@@ -181,11 +185,11 @@ function buildFilter(): RoundFilter | undefined {
 }
 
 .dev-count::before {
-	content: '(';
+	content: "(";
 }
 
 .dev-count::after {
-	content: ')';
+	content: ")";
 }
 
 .levels {
