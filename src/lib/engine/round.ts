@@ -1,5 +1,5 @@
 import { scenarios } from '$lib/data/scenarios';
-import type { Answer, Difficulty, RoundResult, Scenario, Verdict } from '$lib/types';
+import type { Answer, Difficulty, RoundResult, Scenario, StatKrTopic, Verdict } from '$lib/types';
 import { findWeakCategories, maxScorePerScenario, scoreAnswer } from './scoring';
 
 const SCENARIOS_PER_ROUND = 30;
@@ -14,13 +14,21 @@ function shuffle<T>(arr: readonly T[]): T[] {
 	return result;
 }
 
+/** Optional filters narrowing which scenarios are eligible for a round */
+export interface RoundFilter {
+	readonly topics?: readonly StatKrTopic[];
+}
+
 /**
  * Pick scenarios for a round.
- * Uses all scenarios from the chosen difficulty, then fills remaining
- * slots from adjacent difficulties if needed.
+ * Uses all scenarios from the chosen difficulty (optionally narrowed by
+ * sourceTopic), then fills remaining slots from adjacent difficulties.
  */
-export function pickScenarios(difficulty: Difficulty): Scenario[] {
-	const primary = scenarios.filter((s) => s.difficulty === difficulty);
+export function pickScenarios(difficulty: Difficulty, filter?: RoundFilter): Scenario[] {
+	const topicSet = filter?.topics && filter.topics.length > 0 ? new Set(filter.topics) : null;
+	const matchesTopic = (s: Scenario): boolean => !topicSet || topicSet.has(s.sourceTopic);
+
+	const primary = scenarios.filter((s) => s.difficulty === difficulty && matchesTopic(s));
 	const shuffled = shuffle(primary);
 
 	if (shuffled.length >= SCENARIOS_PER_ROUND) {
@@ -35,7 +43,9 @@ export function pickScenarios(difficulty: Difficulty): Scenario[] {
 	};
 
 	const extras = shuffle(
-		scenarios.filter((s) => fillOrder[difficulty].includes(s.difficulty)),
+		scenarios.filter(
+			(s) => fillOrder[difficulty].includes(s.difficulty) && matchesTopic(s),
+		),
 	);
 	const combined = [...shuffled, ...extras];
 	return combined.slice(0, SCENARIOS_PER_ROUND);

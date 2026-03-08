@@ -9,7 +9,7 @@ const game = new Game();
 
 <main>
 	{#if game.state.phase === 'menu'}
-		<Menu onstart={(d) => game.startRound(d)} />
+		<Menu onstart={(d, f) => game.startRound(d, f)} />
 	{:else if game.state.phase === 'playing' && game.currentScenario}
 		<Playing
 			scenario={game.currentScenario}

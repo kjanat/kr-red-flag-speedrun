@@ -16,5 +16,5 @@ export default defineConfig({
 			emit: { source: true, inject: 'minimal' },
 			dev: { injection: 'shim' },
 		}),
-	]
+	],
 });
