@@ -175,7 +175,7 @@ function buildFilter(): RoundFilter | undefined {
 .pill-active {
 	border-color: var(--color-accent-a);
 	background: var(--color-accent-a);
-	color: var(--color-bg, #fff);
+	color: var(--color-bg, oklch(100% 0 none));
 }
 
 .dev-count {

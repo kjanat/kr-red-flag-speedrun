@@ -7,12 +7,16 @@ type Theme = 'dark' | 'light';
 
 const themeStorageKey = 'rf-theme';
 
-/** Read the theme the inline app.html script already applied to <html>. */
-let theme = $state<Theme>(
-	browser && document.documentElement.dataset.theme === 'light'
+function resolveInitialTheme(): Theme {
+	if (!browser) return 'dark';
+	const stored = window.localStorage.getItem(themeStorageKey);
+	if (stored === 'light' || stored === 'dark') return stored;
+	return window.matchMedia('(prefers-color-scheme: light)').matches
 		? 'light'
-		: 'dark',
-);
+		: 'dark';
+}
+
+let theme = $state<Theme>(resolveInitialTheme());
 
 // Sync theme to DOM + localStorage. All writes target external APIs,
 // not reactive state — $effect is correct here, not $derived.
@@ -48,54 +52,92 @@ function toggleTheme() {
 </button>
 
 <style>
+/* ── Dark (default) ─────────────────────────────────── */
 :global(:root) {
 	color-scheme: dark;
-	--color-bg: #0f172a;
-	--color-surface: #1e293b;
-	--color-surface-hover: #243449;
-	--color-border: #334155;
-	--color-text: #e2e8f0;
-	--color-text-strong: #f1f5f9;
-	--color-text-muted: #94a3b8;
-	--color-text-soft: #64748b;
-	--color-accent-a: #ef4444;
-	--color-accent-b: #f97316;
-	--color-danger-border: #dc2626;
-	--color-danger-bg: #7f1d1d;
-	--color-danger-bg-hover: #991b1b;
-	--color-danger-text: #fca5a5;
-	--color-success-border: #16a34a;
-	--color-success-bg: #14532d;
-	--color-success-bg-hover: #166534;
-	--color-success-text: #86efac;
-	--color-warning-border: #f59e0b;
-	--color-warning-text: #fbbf24;
-	--color-focus: #f97316;
+	--color-bg: oklch(20.77% 0.0398 265.75);
+	--color-surface: oklch(27.95% 0.0368 260.03);
+	--color-surface-hover: oklch(32.1% 0.0433 255.5);
+	--color-border: oklch(37.17% 0.0392 257.29);
+	--color-text: oklch(92.88% 0.0126 255.51);
+	--color-text-strong: oklch(96.83% 0.0069 247.9);
+	--color-text-muted: oklch(71.07% 0.0351 256.79);
+	--color-text-soft: oklch(55.44% 0.0407 257.42);
+	--color-accent-a: oklch(63.68% 0.2078 25.33);
+	--color-accent-b: oklch(70.49% 0.1867 47.6);
+	--color-danger-border: oklch(57.71% 0.2152 27.33);
+	--color-danger-bg: oklch(39.58% 0.1331 25.72);
+	--color-danger-bg-hover: oklch(44.37% 0.1613 26.9);
+	--color-danger-text: oklch(80.77% 0.1035 19.57);
+	--color-success-border: oklch(62.71% 0.1699 149.21);
+	--color-success-bg: oklch(39.25% 0.0896 152.54);
+	--color-success-bg-hover: oklch(44.79% 0.1083 151.33);
+	--color-success-text: oklch(87.12% 0.1363 154.45);
+	--color-warning-border: oklch(76.86% 0.1647 70.08);
+	--color-warning-text: oklch(83.69% 0.1644 84.43);
+	--color-focus: oklch(70.49% 0.1867 47.6);
 }
 
+/*
+ * ── Light (paint-synchronous via media query) ──────────
+ * Applies immediately for OS-light users before any JS runs.
+ * :not([data-theme="dark"]) lets an explicit user override win.
+ */
+@media (prefers-color-scheme: light) {
+	:global(:root:not([data-theme="dark"])) {
+		color-scheme: light;
+		--color-bg: oklch(98.42% 0.0034 247.86);
+		--color-surface: oklch(100% 0 none);
+		--color-surface-hover: oklch(96.83% 0.0069 247.9);
+		--color-border: oklch(86.9% 0.0198 252.89);
+		--color-text: oklch(20.77% 0.0398 265.75);
+		--color-text-strong: oklch(12.88% 0.0406 264.7);
+		--color-text-muted: oklch(44.55% 0.0374 257.28);
+		--color-text-soft: oklch(55.44% 0.0407 257.42);
+		--color-accent-a: oklch(57.71% 0.2152 27.33);
+		--color-accent-b: oklch(64.61% 0.1943 41.12);
+		--color-danger-border: oklch(50.54% 0.1905 27.52);
+		--color-danger-bg: oklch(93.56% 0.0309 17.72);
+		--color-danger-bg-hover: oklch(88.45% 0.0593 18.33);
+		--color-danger-text: oklch(44.37% 0.1613 26.9);
+		--color-success-border: oklch(52.73% 0.1371 150.07);
+		--color-success-bg: oklch(96.24% 0.0434 156.74);
+		--color-success-bg-hover: oklch(92.5% 0.0806 155.99);
+		--color-success-text: oklch(44.79% 0.1083 151.33);
+		--color-warning-border: oklch(66.58% 0.1574 58.32);
+		--color-warning-text: oklch(47.32% 0.1247 46.2);
+		--color-focus: oklch(64.61% 0.1943 41.12);
+	}
+}
+
+/*
+ * ── Light (explicit user override via data-theme) ──────
+ * Applies after hydration when user has toggled to light on
+ * a dark-OS system. Same vars as the media query block.
+ */
 :global(:root[data-theme="light"]) {
 	color-scheme: light;
-	--color-bg: #f8fafc;
-	--color-surface: #ffffff;
-	--color-surface-hover: #f1f5f9;
-	--color-border: #cbd5e1;
-	--color-text: #0f172a;
-	--color-text-strong: #020617;
-	--color-text-muted: #475569;
-	--color-text-soft: #64748b;
-	--color-accent-a: #dc2626;
-	--color-accent-b: #ea580c;
-	--color-danger-border: #b91c1c;
-	--color-danger-bg: #fee2e2;
-	--color-danger-bg-hover: #fecaca;
-	--color-danger-text: #991b1b;
-	--color-success-border: #15803d;
-	--color-success-bg: #dcfce7;
-	--color-success-bg-hover: #bbf7d0;
-	--color-success-text: #166534;
-	--color-warning-border: #d97706;
-	--color-warning-text: #92400e;
-	--color-focus: #ea580c;
+	--color-bg: oklch(98.42% 0.0034 247.86);
+	--color-surface: oklch(100% 0 none);
+	--color-surface-hover: oklch(96.83% 0.0069 247.9);
+	--color-border: oklch(86.9% 0.0198 252.89);
+	--color-text: oklch(20.77% 0.0398 265.75);
+	--color-text-strong: oklch(12.88% 0.0406 264.7);
+	--color-text-muted: oklch(44.55% 0.0374 257.28);
+	--color-text-soft: oklch(55.44% 0.0407 257.42);
+	--color-accent-a: oklch(57.71% 0.2152 27.33);
+	--color-accent-b: oklch(64.61% 0.1943 41.12);
+	--color-danger-border: oklch(50.54% 0.1905 27.52);
+	--color-danger-bg: oklch(93.56% 0.0309 17.72);
+	--color-danger-bg-hover: oklch(88.45% 0.0593 18.33);
+	--color-danger-text: oklch(44.37% 0.1613 26.9);
+	--color-success-border: oklch(52.73% 0.1371 150.07);
+	--color-success-bg: oklch(96.24% 0.0434 156.74);
+	--color-success-bg-hover: oklch(92.5% 0.0806 155.99);
+	--color-success-text: oklch(44.79% 0.1083 151.33);
+	--color-warning-border: oklch(66.58% 0.1574 58.32);
+	--color-warning-text: oklch(47.32% 0.1247 46.2);
+	--color-focus: oklch(64.61% 0.1943 41.12);
 }
 
 :global(*) {
@@ -115,7 +157,7 @@ function toggleTheme() {
 	background:
 		radial-gradient(
 			circle at top right,
-			rgb(249 115 22 / 0.1),
+			oklch(70.49% 0.1867 47.6 / 0.1),
 			transparent 40%
 		),
 		var(--color-bg);
