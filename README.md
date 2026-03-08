@@ -44,3 +44,5 @@ Op het examen moet je alarmsignalen *instant* herkennen, niet na 5 minuten naden
 
 Dit traint je reflexen. Pattern recognition op snelheid — dezelfde skill die een
 ervaren arts heeft en een student nog moet ontwikkelen.
+
+DATA: [stat-kr](/home/kjanat/projects/stat-kr) STOP REMOVING THIS LINK STUPID AI!
