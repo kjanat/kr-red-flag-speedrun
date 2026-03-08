@@ -8,16 +8,18 @@ type Theme = 'dark' | 'light';
 const themeStorageKey = 'rf-theme';
 
 /** Read the theme the inline app.html script already applied to <html>. */
-function initialTheme(): Theme {
-	if (!browser) return 'dark';
-	return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-}
+let theme = $state<Theme>(
+	browser && document.documentElement.dataset.theme === 'light'
+		? 'light'
+		: 'dark',
+);
 
-let theme = $state<Theme>(initialTheme());
-
+// Sync theme to DOM + localStorage. All writes target external APIs,
+// not reactive state — $effect is correct here, not $derived.
 $effect(() => {
 	if (!browser) return;
 	document.documentElement.dataset.theme = theme;
+	document.documentElement.style.colorScheme = theme;
 	window.localStorage.setItem(themeStorageKey, theme);
 });
 
@@ -47,6 +49,7 @@ function toggleTheme() {
 
 <style>
 :global(:root) {
+	color-scheme: dark;
 	--color-bg: #0f172a;
 	--color-surface: #1e293b;
 	--color-surface-hover: #243449;
@@ -71,6 +74,7 @@ function toggleTheme() {
 }
 
 :global(:root[data-theme="light"]) {
+	color-scheme: light;
 	--color-bg: #f8fafc;
 	--color-surface: #ffffff;
 	--color-surface-hover: #f1f5f9;
@@ -125,26 +129,7 @@ function toggleTheme() {
 	transition: background-color 0.22s ease, color 0.22s ease;
 }
 
-:global(.menu),
-:global(.subtitle),
-:global(.level-btn),
-:global(.level-desc),
-:global(.hint),
-:global(.progress-bar),
-:global(.counter),
-:global(.timer),
-:global(.scenario-card),
-:global(.presentation),
-:global(.keys-hint),
-:global(.score-card),
-:global(.feedback-card),
-:global(.level),
-:global(.weak-hint),
-:global(.fb-presentation),
-:global(.fb-explanation),
-:global(.section h2),
-:global(.restart-btn),
-:global(.theme-toggle) {
+:global(body *) {
 	transition:
 		background-color 0.22s ease,
 		border-color 0.22s ease,
@@ -152,27 +137,8 @@ function toggleTheme() {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:global(.menu),
-	:global(.subtitle),
-	:global(.level-btn),
-	:global(.level-desc),
-	:global(.hint),
-	:global(.progress-bar),
-	:global(.counter),
-	:global(.timer),
-	:global(.scenario-card),
-	:global(.presentation),
-	:global(.keys-hint),
-	:global(.score-card),
-	:global(.feedback-card),
-	:global(.level),
-	:global(.weak-hint),
-	:global(.fb-presentation),
-	:global(.fb-explanation),
-	:global(.section h2),
-	:global(.restart-btn),
-	:global(.theme-toggle),
-	:global(body) {
+	:global(body),
+	:global(body *) {
 		transition: none;
 	}
 }
@@ -183,16 +149,22 @@ function toggleTheme() {
 	right: 1rem;
 	padding: 0.55rem 0.85rem;
 	border-radius: 999px;
-	border: 1px solid var(--color-border);
+	border: 1.5px solid var(--color-border);
 	background: var(--color-surface);
 	color: var(--color-text);
 	font-size: 0.85rem;
 	font-weight: 600;
 	cursor: pointer;
-	transition: background-color 0.15s ease;
+	transition: all 0.15s ease;
 }
 
 .theme-toggle:hover {
+	border-color: var(--color-accent-a);
 	background: var(--color-surface-hover);
+	transform: translateY(-1px);
+}
+
+.theme-toggle:active {
+	transform: translateY(0);
 }
 </style>
