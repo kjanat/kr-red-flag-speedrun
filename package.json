@@ -10,7 +10,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"dev": "vite dev",
 		"fmt": "dprint fmt",
-		"prepare": "svelte-kit sync || echo ''",
+		"prepare": "bunx --bun svelte-kit sync",
 		"preview": "vite preview",
 		"test": "vitest run",
 		"test:watch": "vitest"
