@@ -62,9 +62,10 @@ export function computeRoundResult(
 	roundScenarios: readonly Scenario[],
 	totalTimeMs: number,
 ): RoundResult {
+	const scenarioById = new Map(roundScenarios.map((scenario) => [scenario.id, scenario]));
 	let score = 0;
 	for (const answer of answers) {
-		const scenario = roundScenarios.find((s) => s.id === answer.scenarioId);
+		const scenario = scenarioById.get(answer.scenarioId);
 		if (scenario) {
 			score += scoreAnswer(scenario, answer.choice, answer.reactionTimeMs);
 		}

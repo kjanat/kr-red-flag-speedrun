@@ -17,11 +17,21 @@ export type Difficulty = 'intern' | 'anios' | 'huisarts';
 /** Whether the scenario is truly dangerous */
 export type Verdict = 'alarm' | 'safe';
 
+/** Source chapter used to derive scenario reasoning (STAT KR) */
+export type StatKrTopic =
+	| 'Hoofdpijn'
+	| 'Hartkloppingen'
+	| 'Acute buikpijn'
+	| 'Enkeloedeem'
+	| 'Verwardheid'
+	| 'Vergeetachtigheid';
+
 /** A single patient scenario */
 export interface Scenario {
 	readonly id: string;
 	readonly difficulty: Difficulty;
 	readonly category: ClinicalCategory;
+	readonly sourceTopic: StatKrTopic;
 	/** The one-liner shown to the player */
 	readonly presentation: string;
 	/** The correct answer */
