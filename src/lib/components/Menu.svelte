@@ -354,13 +354,26 @@ const filterCount = $derived(selectedTopics.length);
 /* ── Mobile ────────────────────────────────────── */
 
 @media (max-width: 480px) {
+	.menu {
+		padding: 1rem;
+	}
+
+	.title {
+		font-size: 2rem;
+	}
+
+	.subtitle {
+		margin-bottom: 0.75rem;
+		font-size: 1rem;
+	}
+
 	.filter-toggle {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
 		width: 100%;
-		padding: 0.75rem 1rem;
+		padding: 0.65rem 1rem;
 		min-height: 44px;
 		border: 1.5px solid var(--color-border);
 		border-radius: 10px;
@@ -368,7 +381,7 @@ const filterCount = $derived(selectedTopics.length);
 		color: var(--color-text-muted);
 		font-size: 0.875rem;
 		cursor: pointer;
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.5rem;
 		transition: border-color 0.15s ease;
 	}
 
@@ -378,6 +391,22 @@ const filterCount = $derived(selectedTopics.length);
 
 	.topic-bar.collapsed {
 		display: none;
+	}
+
+	.round-config {
+		margin-bottom: 0.75rem;
+	}
+
+	.levels {
+		gap: 0.625rem;
+	}
+
+	.level-btn {
+		padding: 0.875rem 1.25rem;
+	}
+
+	.hint {
+		margin-top: 1rem;
 	}
 }
 </style>

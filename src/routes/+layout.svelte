@@ -222,6 +222,12 @@ function toggleTheme() {
 		color 0.22s ease;
 }
 
+@media (max-width: 480px) {
+	:global(body) {
+		padding-top: max(1.25rem, env(safe-area-inset-top));
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	:global(body),
 	:global(body *) {
