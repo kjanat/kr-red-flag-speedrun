@@ -35,6 +35,7 @@ function fakeResult(overrides: Partial<RoundResult> = {}): RoundResult {
 		],
 		score: 200,
 		maxPossibleScore: 300,
+		chanceBaseline: -100,
 		weakCategories: [],
 		totalTimeMs: 7_000,
 		...overrides,
@@ -91,6 +92,24 @@ describe('corrupt data handling', () => {
 	it('returns empty array for non-array JSON', () => {
 		store.set('rf-history', '{"a":1}');
 		expect(loadHistory()).toEqual([]);
+	});
+
+	it('loads legacy entries without chanceBaseline', () => {
+		const legacy = {
+			difficulty: 'intern',
+			score: 100,
+			maxPossible: 300,
+			correctCount: 1,
+			totalCount: 2,
+			totalTimeMs: 5_000,
+			weakCategories: [],
+			timestamp: '2026-01-01T00:00:00.000Z',
+		};
+		store.set('rf-history', JSON.stringify([legacy]));
+
+		const history = loadHistory();
+		expect(history).toHaveLength(1);
+		expect(history[0].chanceBaseline).toBeUndefined();
 	});
 
 	it('filters out entries with wrong shape', () => {

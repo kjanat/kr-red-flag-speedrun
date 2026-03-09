@@ -49,6 +49,41 @@ export function maxScorePerScenario(): number {
 }
 
 /**
+ * Expected score from random 50/50 guessing on the actual scenarios played.
+ * Accounts for the real alarm/safe ratio and asymmetric penalties.
+ * Speed bonus excluded — a random guesser doesn't "know" fast.
+ */
+export function expectedChanceScore(scenarios: readonly Scenario[]): number {
+	let expected = 0;
+	for (const s of scenarios) {
+		if (s.verdict === 'alarm') {
+			// 50% correct (+BASE), 50% missed red flag (MISSED_RED_FLAG_PENALTY)
+			expected += 0.5 * BASE_CORRECT + 0.5 * MISSED_RED_FLAG_PENALTY;
+		} else {
+			// 50% correct (+BASE), 50% false alarm (FALSE_ALARM_PENALTY)
+			expected += 0.5 * BASE_CORRECT + 0.5 * FALSE_ALARM_PENALTY;
+		}
+	}
+	return expected;
+}
+
+/**
+ * Chance-adjusted performance percentage.
+ *   0% = random guesser baseline
+ * 100% = perfect score
+ *  <0% = worse than guessing
+ */
+export function chanceAdjustedPct(
+	actualScore: number,
+	maxScore: number,
+	chanceScore: number,
+): number {
+	const denominator = maxScore - chanceScore;
+	if (denominator <= 0) return 0;
+	return Math.round(((actualScore - chanceScore) / denominator) * 100);
+}
+
+/**
  * Find the categories the player most often got wrong.
  * Returns categories with >= 2 errors, sorted by error count descending.
  */

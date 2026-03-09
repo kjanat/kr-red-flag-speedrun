@@ -12,6 +12,8 @@ export interface SavedRound {
 	readonly totalCount: number;
 	readonly totalTimeMs: number;
 	readonly weakCategories: readonly ClinicalCategory[];
+	/** Expected random-guesser score; absent in rounds saved before this feature */
+	readonly chanceBaseline?: number;
 	/** ISO 8601 */
 	readonly timestamp: string;
 }
@@ -39,6 +41,7 @@ function toSavedRound(result: RoundResult): SavedRound {
 		totalCount: result.answers.length,
 		totalTimeMs: result.totalTimeMs,
 		weakCategories: result.weakCategories,
+		chanceBaseline: result.chanceBaseline,
 		timestamp: new Date().toISOString(),
 	};
 }

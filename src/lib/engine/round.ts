@@ -1,6 +1,6 @@
 import { scenarios } from '$lib/data/scenarios';
 import type { Answer, Difficulty, RoundResult, Scenario, StatKrTopic, Verdict } from '$lib/types';
-import { findWeakCategories, maxScorePerScenario, scoreAnswer } from './scoring';
+import { expectedChanceScore, findWeakCategories, maxScorePerScenario, scoreAnswer } from './scoring';
 
 /** Valid round-length options */
 export const ROUND_LENGTHS = [10, 20, 30] as const;
@@ -93,6 +93,7 @@ export function computeRoundResult(
 		answers,
 		score,
 		maxPossibleScore: answers.length * maxScorePerScenario(),
+		chanceBaseline: expectedChanceScore(roundScenarios),
 		weakCategories: findWeakCategories(answers, roundScenarios),
 		totalTimeMs,
 	};

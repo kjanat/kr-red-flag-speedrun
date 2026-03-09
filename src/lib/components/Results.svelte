@@ -1,5 +1,6 @@
 <script lang="ts">
 import { getStats, type HistoryStats } from '$lib/engine/history';
+import { chanceAdjustedPct } from '$lib/engine/scoring';
 import type { ClinicalCategory, RoundResult, Scenario } from '$lib/types';
 
 interface Props {
@@ -25,6 +26,14 @@ const fastestMs = $derived(
 );
 const slowestMs = $derived(
 	Math.max(...result.answers.map((a) => a.reactionTimeMs)),
+);
+
+const adjustedPct = $derived(
+	chanceAdjustedPct(
+		result.score,
+		result.maxPossibleScore,
+		result.chanceBaseline,
+	),
 );
 
 const missedRedFlags = $derived(
@@ -109,6 +118,7 @@ $effect(() => {
 			{result.score}
 		</div>
 		<div class="score-detail">van {result.maxPossibleScore} mogelijk</div>
+		<div class="chance-adjusted">{adjustedPct}% boven kansniveau</div>
 		<div class="stats-row">
 			<span>{correctCount}/{totalCount} correct ({pct}%)</span>
 			<span class="separator">&middot;</span>
@@ -309,6 +319,13 @@ $effect(() => {
 .score-detail {
 	color: var(--color-text-soft);
 	font-size: 0.875rem;
+}
+
+.chance-adjusted {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--color-accent-a);
+	margin-top: 0.25rem;
 }
 
 .stats-row {

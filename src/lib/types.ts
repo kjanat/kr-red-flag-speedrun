@@ -55,6 +55,8 @@ export interface RoundResult {
 	readonly answers: readonly Answer[];
 	readonly score: number;
 	readonly maxPossibleScore: number;
+	/** Expected score from random 50/50 guessing on these specific scenarios */
+	readonly chanceBaseline: number;
 	/** Categories the player most often got wrong */
 	readonly weakCategories: readonly ClinicalCategory[];
 	readonly totalTimeMs: number;

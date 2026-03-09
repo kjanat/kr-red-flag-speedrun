@@ -62,6 +62,7 @@ describe('computeRoundResult', () => {
 		expect(result.maxPossibleScore).toBe(300);
 		expect(result.totalTimeMs).toBe(12_345);
 		expect(result.score).toBeLessThan(result.maxPossibleScore);
+		expect(typeof result.chanceBaseline).toBe('number');
 	});
 
 	it('ignores answers that do not map to a known scenario id', () => {
