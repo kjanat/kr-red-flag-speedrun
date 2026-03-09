@@ -7,8 +7,8 @@ import {
 	type RoundFilter,
 	type RoundLength,
 } from '$lib/engine/round';
-import { withViewTransition } from '$lib/transitions';
 import type { Difficulty, StatKrTopic } from '$lib/types';
+import { slide } from 'svelte/transition';
 
 interface Props {
 	onstart: (
@@ -95,7 +95,7 @@ const filterCount = $derived(selectedTopics.length);
 	<!-- Mobile filter toggle -->
 	<button
 		class="filter-toggle"
-		onclick={() => withViewTransition(() => (filterExpanded = !filterExpanded))}
+		onclick={() => (filterExpanded = !filterExpanded)}
 		aria-expanded={filterExpanded}
 		aria-controls="topic-filter"
 	>
@@ -104,10 +104,40 @@ const filterCount = $derived(selectedTopics.length);
 	</button>
 
 	<!-- Topic filter pills -->
+	{#if filterExpanded}
+		<div
+			id="topic-filter"
+			class="topic-bar mobile-filter"
+			transition:slide={{ duration: 200 }}
+			role="group"
+			aria-label="Filter op onderwerp"
+		>
+			<button
+				class="pill"
+				class:pill-active={selectedTopics.length === 0}
+				onclick={() => (selectedTopics = [])}
+				aria-pressed={selectedTopics.length === 0}
+			>
+				Alles
+			</button>
+			{#each topics as topic (topic.id)}
+				<button
+					class="pill"
+					class:pill-active={selectedTopics.includes(topic.id)}
+					onclick={() => toggleTopic(topic.id)}
+					aria-pressed={selectedTopics.includes(topic.id)}
+				>
+					{topic.label}{#if dev}<span class="dev-count">{
+							topicCounts.get(topic.id)
+						}</span>{/if}
+				</button>
+			{/each}
+		</div>
+	{/if}
+
+	<!-- Desktop topic filter (always visible) -->
 	<div
-		id="topic-filter"
-		class="topic-bar"
-		class:collapsed={!filterExpanded}
+		class="topic-bar desktop-filter"
 		role="group"
 		aria-label="Filter op onderwerp"
 	>
@@ -222,7 +252,10 @@ const filterCount = $derived(selectedTopics.length);
 	gap: 0.5rem;
 	justify-content: center;
 	margin-bottom: 1rem;
-	view-transition-name: topic-filter;
+}
+
+.mobile-filter {
+	display: none;
 }
 
 .pill {
@@ -246,7 +279,8 @@ const filterCount = $derived(selectedTopics.length);
 	color: var(--color-text);
 }
 
-.pill-active {
+.pill-active,
+.pill-active:hover {
 	border-color: var(--color-accent-a);
 	background: var(--color-accent-a);
 	color: white;
@@ -391,7 +425,11 @@ const filterCount = $derived(selectedTopics.length);
 		border-color: var(--color-accent-a);
 	}
 
-	.topic-bar.collapsed {
+	.mobile-filter {
+		display: flex;
+	}
+
+	.desktop-filter {
 		display: none;
 	}
 
