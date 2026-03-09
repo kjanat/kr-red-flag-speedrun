@@ -50,6 +50,7 @@ function handleAdvance(answer: Answer) {
 main {
 	width: 100%;
 	max-width: 600px;
+	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

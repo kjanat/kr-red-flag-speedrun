@@ -247,7 +247,7 @@ const filterCount = $derived(selectedTopics.length);
 .pill-active {
 	border-color: var(--color-accent-a);
 	background: var(--color-accent-a);
-	color: var(--color-bg);
+	color: white;
 }
 
 .dev-count {
