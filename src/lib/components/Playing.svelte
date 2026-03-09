@@ -11,7 +11,10 @@ interface Props {
 
 const { scenario, index, total, onrecord, onadvance }: Props = $props();
 
-const FEEDBACK_MS = 400;
+/** Correct: advance immediately — the slide animation IS the feedback.
+ *  Wrong: short static pause so correction text is readable before the card slides away. */
+const FEEDBACK_CORRECT_MS = 0;
+const FEEDBACK_WRONG_MS = 200;
 
 let elapsed = $state(0);
 let intervalId: ReturnType<typeof setInterval> | undefined;
@@ -58,13 +61,14 @@ function handleAnswer(choice: Verdict) {
 	// Pause timer
 	if (intervalId !== undefined) clearInterval(intervalId);
 
+	const delay = answer.correct ? FEEDBACK_CORRECT_MS : FEEDBACK_WRONG_MS;
+
 	feedbackTimeout = setTimeout(() => {
 		const a = pendingAnswer;
 		if (!a) return;
 		onadvance(a);
-		feedback = null;
-		pendingAnswer = null;
-	}, FEEDBACK_MS);
+		// feedback/pendingAnswer reset by $effect when scenario changes
+	}, delay);
 }
 
 function handleKey(e: KeyboardEvent) {

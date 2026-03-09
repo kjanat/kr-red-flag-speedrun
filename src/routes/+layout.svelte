@@ -309,6 +309,27 @@ function toggleTheme() {
 	}
 }
 
+@keyframes vt-slide-to-alarm {
+	to {
+		transform: translateX(-120%) rotate(-8deg);
+		opacity: 0;
+	}
+}
+
+@keyframes vt-slide-to-safe {
+	to {
+		transform: translateX(120%) rotate(8deg);
+		opacity: 0;
+	}
+}
+
+@keyframes vt-card-reveal {
+	from {
+		transform: scale(0.95);
+		opacity: 0.7;
+	}
+}
+
 :global(::view-transition-group(*)) {
 	animation-duration: 0.25s;
 	animation-timing-function: ease-out;
@@ -322,12 +343,32 @@ function toggleTheme() {
 	&::view-transition-new(root) {
 		animation: 0.25s ease-out both vt-slide-up-in;
 	}
-	/* Scenario card: crossfade + subtle scale */
+	/* Scenario card default: crossfade + subtle scale */
 	&::view-transition-old(scenario-card) {
 		animation: 0.15s ease-out both vt-fade-out;
 	}
 	&::view-transition-new(scenario-card) {
 		animation: 0.2s 0.05s ease-out both vt-scale-in;
+	}
+}
+
+/* Answer slide: card flies toward the ALARM button (left) */
+:global(html:active-view-transition-type(answer-alarm)) {
+	&::view-transition-old(scenario-card) {
+		animation: 0.3s ease-in both vt-slide-to-alarm;
+	}
+	&::view-transition-new(scenario-card) {
+		animation: 0.3s ease-out both vt-card-reveal;
+	}
+}
+
+/* Answer slide: card flies toward the SAFE button (right) */
+:global(html:active-view-transition-type(answer-safe)) {
+	&::view-transition-old(scenario-card) {
+		animation: 0.3s ease-in both vt-slide-to-safe;
+	}
+	&::view-transition-new(scenario-card) {
+		animation: 0.3s ease-out both vt-card-reveal;
 	}
 }
 

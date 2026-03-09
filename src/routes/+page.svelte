@@ -10,12 +10,17 @@ import type { Answer } from '$lib/types';
 const game = new Game();
 
 function handleAdvance(answer: Answer) {
-	withViewTransition(() => {
-		game.advance(answer);
-		if (game.state.phase === 'results') {
-			saveRound(game.state.result);
-		}
-	}, 'forwards');
+	const answerType = answer.choice === 'alarm' ? 'answer-alarm' : 'answer-safe';
+	withViewTransition(
+		() => {
+			game.advance(answer);
+			if (game.state.phase === 'results') {
+				saveRound(game.state.result);
+			}
+		},
+		'forwards',
+		[answerType],
+	);
 }
 </script>
 
@@ -48,5 +53,6 @@ main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	overflow: clip;
 }
 </style>

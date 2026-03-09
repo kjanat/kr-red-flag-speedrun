@@ -9,6 +9,7 @@ type TransitionDirection = 'forwards' | 'backwards';
 export function withViewTransition(
 	mutate: () => void,
 	direction?: TransitionDirection,
+	extraTypes?: readonly string[],
 ): void {
 	if (
 		typeof document === 'undefined'
@@ -19,8 +20,13 @@ export function withViewTransition(
 		return;
 	}
 
+	const types = [
+		...(direction ? [direction] : []),
+		...(extraTypes ?? []),
+	];
+
 	document.startViewTransition({
 		update: () => flushSync(mutate),
-		types: direction ? [direction] : [],
+		types,
 	});
 }
