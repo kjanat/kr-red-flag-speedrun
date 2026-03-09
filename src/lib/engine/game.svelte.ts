@@ -1,5 +1,5 @@
 import type { Answer, Difficulty, GameState, RoundResult, Scenario, Verdict } from '$lib/types';
-import { computeRoundResult, pickScenarios, processAnswer, type RoundFilter } from './round';
+import { computeRoundResult, pickScenarios, processAnswer, type RoundFilter, type RoundLength } from './round';
 
 /**
  * Reactive game state manager using Svelte 5 runes.
@@ -40,9 +40,9 @@ export class Game {
 		return this.currentIndex / this.roundScenarios.length;
 	}
 
-	/** Start a new round with the given difficulty and optional topic filter */
-	startRound(difficulty: Difficulty, filter?: RoundFilter): void {
-		this.roundScenarios = pickScenarios(difficulty, filter);
+	/** Start a new round with the given difficulty, optional topic filter, and round length */
+	startRound(difficulty: Difficulty, filter?: RoundFilter, count?: RoundLength): void {
+		this.roundScenarios = pickScenarios(difficulty, filter, count);
 		this.currentIndex = 0;
 		this.answers = [];
 		this.roundStartTime = performance.now();

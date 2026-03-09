@@ -5,16 +5,22 @@ import type { Answer, Scenario } from '$lib/types';
 import { computeRoundResult, pickScenarios, processAnswer } from './round';
 
 describe('pickScenarios', () => {
-	it('always returns 30 unique scenarios', () => {
+	it('returns default 10 unique scenarios when no count given', () => {
 		const picked = pickScenarios('intern');
+		expect(picked).toHaveLength(10);
+		expect(new Set(picked.map((s) => s.id)).size).toBe(10);
+	});
+
+	it('returns requested count of unique scenarios', () => {
+		const picked = pickScenarios('intern', undefined, 30);
 		expect(picked).toHaveLength(30);
-		expect(new Set(picked.map((scenario) => scenario.id)).size).toBe(30);
+		expect(new Set(picked.map((s) => s.id)).size).toBe(30);
 	});
 
 	it('includes scenarios from chosen difficulty', () => {
-		const picked = pickScenarios('huisarts');
-		const totalHuisarts = scenarios.filter((scenario) => scenario.difficulty === 'huisarts').length;
-		const huisartsCount = picked.filter((scenario) => scenario.difficulty === 'huisarts').length;
+		const picked = pickScenarios('huisarts', undefined, 30);
+		const totalHuisarts = scenarios.filter((s) => s.difficulty === 'huisarts').length;
+		const huisartsCount = picked.filter((s) => s.difficulty === 'huisarts').length;
 		// All chosen-difficulty scenarios fit when pool <= 30; otherwise capped at 30
 		const expectedCount = Math.min(totalHuisarts, 30);
 		expect(huisartsCount).toBe(expectedCount);

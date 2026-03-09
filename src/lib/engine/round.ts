@@ -2,7 +2,10 @@ import { scenarios } from '$lib/data/scenarios';
 import type { Answer, Difficulty, RoundResult, Scenario, StatKrTopic, Verdict } from '$lib/types';
 import { findWeakCategories, maxScorePerScenario, scoreAnswer } from './scoring';
 
-const SCENARIOS_PER_ROUND = 30;
+/** Valid round-length options */
+export const ROUND_LENGTHS = [10, 20, 30] as const;
+export type RoundLength = (typeof ROUND_LENGTHS)[number];
+export const DEFAULT_ROUND_LENGTH: RoundLength = 10;
 
 /** Fisher-Yates shuffle (returns new array) */
 function shuffle<T>(arr: readonly T[]): T[] {
@@ -24,15 +27,19 @@ export interface RoundFilter {
  * Uses all scenarios from the chosen difficulty (optionally narrowed by
  * sourceTopic), then fills remaining slots from adjacent difficulties.
  */
-export function pickScenarios(difficulty: Difficulty, filter?: RoundFilter): Scenario[] {
+export function pickScenarios(
+	difficulty: Difficulty,
+	filter?: RoundFilter,
+	count: RoundLength = DEFAULT_ROUND_LENGTH,
+): Scenario[] {
 	const topicSet = filter?.topics && filter.topics.length > 0 ? new Set(filter.topics) : null;
 	const matchesTopic = (s: Scenario): boolean => !topicSet || topicSet.has(s.sourceTopic);
 
 	const primary = scenarios.filter((s) => s.difficulty === difficulty && matchesTopic(s));
 	const shuffled = shuffle(primary);
 
-	if (shuffled.length >= SCENARIOS_PER_ROUND) {
-		return shuffled.slice(0, SCENARIOS_PER_ROUND);
+	if (shuffled.length >= count) {
+		return shuffled.slice(0, count);
 	}
 
 	// Fill remaining from other difficulties (prefer adjacent)
@@ -48,7 +55,7 @@ export function pickScenarios(difficulty: Difficulty, filter?: RoundFilter): Sce
 		),
 	);
 	const combined = [...shuffled, ...extras];
-	return combined.slice(0, SCENARIOS_PER_ROUND);
+	return combined.slice(0, count);
 }
 
 /** Process a player's choice and return the Answer */

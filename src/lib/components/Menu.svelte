@@ -1,11 +1,20 @@
 <script lang="ts">
 import { scenarios } from '$lib/data/scenarios';
 import { getHighScore } from '$lib/engine/history';
-import type { RoundFilter } from '$lib/engine/round';
+import {
+	DEFAULT_ROUND_LENGTH,
+	ROUND_LENGTHS,
+	type RoundFilter,
+	type RoundLength,
+} from '$lib/engine/round';
 import type { Difficulty, StatKrTopic } from '$lib/types';
 
 interface Props {
-	onstart: (difficulty: Difficulty, filter?: RoundFilter) => void;
+	onstart: (
+		difficulty: Difficulty,
+		filter?: RoundFilter,
+		count?: RoundLength,
+	) => void;
 }
 
 const { onstart }: Props = $props();
@@ -41,6 +50,8 @@ const topics: { id: StatKrTopic; label: string }[] = [
 
 /** Selected topic ids; empty = all topics */
 let selectedTopics: StatKrTopic[] = $state([]);
+let roundLength: RoundLength = $state(DEFAULT_ROUND_LENGTH);
+let filterExpanded = $state(false);
 
 function toggleTopic(topic: StatKrTopic): void {
 	if (selectedTopics.includes(topic)) {
@@ -72,13 +83,33 @@ const topicCounts: ReadonlyMap<StatKrTopic, number> = new Map(
 function buildFilter(): RoundFilter | undefined {
 	return selectedTopics.length > 0 ? { topics: selectedTopics } : undefined;
 }
+
+const filterCount = $derived(selectedTopics.length);
 </script>
 
 <div class="menu">
 	<h1 class="title">Red Flag Speedrun</h1>
 	<p class="subtitle">Herken alarmsignalen onder tijdsdruk</p>
 
-	<div class="topic-bar" role="group" aria-label="Filter op onderwerp">
+	<!-- Mobile filter toggle -->
+	<button
+		class="filter-toggle"
+		onclick={() => (filterExpanded = !filterExpanded)}
+		aria-expanded={filterExpanded}
+		aria-controls="topic-filter"
+	>
+		<span>Filter{filterCount > 0 ? ` (${filterCount})` : ''}</span>
+		<span class="chevron" class:open={filterExpanded}>&#x25BE;</span>
+	</button>
+
+	<!-- Topic filter pills -->
+	<div
+		id="topic-filter"
+		class="topic-bar"
+		class:collapsed={!filterExpanded}
+		role="group"
+		aria-label="Filter op onderwerp"
+	>
 		<button
 			class="pill"
 			class:pill-active={selectedTopics.length === 0}
@@ -101,14 +132,29 @@ function buildFilter(): RoundFilter | undefined {
 		{/each}
 	</div>
 
+	<!-- Round length selector -->
+	<div class="round-config" role="group" aria-label="Aantal vragen per ronde">
+		{#each ROUND_LENGTHS as len}
+			<button
+				class="pill length-pill"
+				class:pill-active={roundLength === len}
+				onclick={() => (roundLength = len)}
+				aria-pressed={roundLength === len}
+			>
+				{len}
+			</button>
+		{/each}
+		<span class="round-label">vragen</span>
+	</div>
+
 	<div class="levels" role="group" aria-label="Kies moeilijkheidsgraad">
 		{#each levels as level}
 			{@const count = countForDifficulty(level.id)}
-			{@const best = getHighScore(level.id)}
+			{@const best = getHighScore(level.id, roundLength)}
 			<button
 				class="level-btn"
 				disabled={count < MIN_PLAYABLE}
-				onclick={() => onstart(level.id, buildFilter())}
+				onclick={() => onstart(level.id, buildFilter(), roundLength)}
 			>
 				<span class="level-name">{level.label}</span>
 				<span class="level-desc">{level.description}</span>
@@ -120,7 +166,7 @@ function buildFilter(): RoundFilter | undefined {
 		{/each}
 	</div>
 
-	<p class="hint">Tot 30 scenario's per ronde. Snelheid telt.</p>
+	<p class="hint">Tot {roundLength} vragen per ronde. Snelheid telt.</p>
 </div>
 
 <style>
@@ -152,12 +198,29 @@ function buildFilter(): RoundFilter | undefined {
 	font-size: 1.1rem;
 }
 
+/* ── Filter toggle (mobile only) ──────────────── */
+
+.filter-toggle {
+	display: none;
+}
+
+.chevron {
+	font-size: 0.75rem;
+	transition: transform 0.2s ease;
+}
+
+.chevron.open {
+	transform: rotate(180deg);
+}
+
+/* ── Topic pills ──────────────────────────────── */
+
 .topic-bar {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	justify-content: center;
-	margin-bottom: 1.5rem;
+	margin-bottom: 1rem;
 }
 
 .pill {
@@ -200,6 +263,29 @@ function buildFilter(): RoundFilter | undefined {
 .dev-count::after {
 	content: ")";
 }
+
+/* ── Round length config ──────────────────────── */
+
+.round-config {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.length-pill {
+	min-width: 3rem;
+	justify-content: center;
+}
+
+.round-label {
+	font-size: 0.8125rem;
+	color: var(--color-text-soft);
+	margin-left: 0.25rem;
+}
+
+/* ── Difficulty buttons ───────────────────────── */
 
 .levels {
 	display: flex;
@@ -263,5 +349,35 @@ function buildFilter(): RoundFilter | undefined {
 	margin-top: 2rem;
 	font-size: 0.8rem;
 	color: var(--color-text-soft);
+}
+
+/* ── Mobile ────────────────────────────────────── */
+
+@media (max-width: 480px) {
+	.filter-toggle {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		width: 100%;
+		padding: 0.75rem 1rem;
+		min-height: 44px;
+		border: 1.5px solid var(--color-border);
+		border-radius: 10px;
+		background: transparent;
+		color: var(--color-text-muted);
+		font-size: 0.875rem;
+		cursor: pointer;
+		margin-bottom: 0.75rem;
+		transition: border-color 0.15s ease;
+	}
+
+	.filter-toggle:hover {
+		border-color: var(--color-accent-a);
+	}
+
+	.topic-bar.collapsed {
+		display: none;
+	}
 }
 </style>

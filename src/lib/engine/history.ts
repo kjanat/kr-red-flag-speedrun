@@ -127,9 +127,11 @@ export function clearHistory(): void {
 	}
 }
 
-/** Best score for a given difficulty, or null if none recorded. */
-export function getHighScore(difficulty: Difficulty): number | null {
+/** Best score for a given difficulty (optionally scoped to round length), or null if none recorded. */
+export function getHighScore(difficulty: Difficulty, roundLength?: number): number | null {
 	const history = readStorage();
-	const scores = history.filter((r) => r.difficulty === difficulty).map((r) => r.score);
+	const scores = history
+		.filter((r) => r.difficulty === difficulty && (roundLength === undefined || r.totalCount === roundLength))
+		.map((r) => r.score);
 	return scores.length > 0 ? Math.max(...scores) : null;
 }

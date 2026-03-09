@@ -22,7 +22,7 @@ function handleAdvance(answer: Answer) {
 <main>
 	{#if game.state.phase === 'menu'}
 		<Menu
-			onstart={(d, f) => withViewTransition(() => game.startRound(d, f), 'forwards')}
+			onstart={(d, f, c) => withViewTransition(() => game.startRound(d, f, c), 'forwards')}
 		/>
 	{:else if game.state.phase === 'playing' && game.currentScenario}
 		<Playing
