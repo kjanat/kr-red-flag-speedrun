@@ -118,7 +118,7 @@ const filterCount = $derived(selectedTopics.length);
 		>
 			Alles
 		</button>
-		{#each topics as topic}
+		{#each topics as topic (topic.id)}
 			<button
 				class="pill"
 				class:pill-active={selectedTopics.includes(topic.id)}
@@ -134,7 +134,7 @@ const filterCount = $derived(selectedTopics.length);
 
 	<!-- Round length selector -->
 	<div class="round-config" role="group" aria-label="Aantal vragen per ronde">
-		{#each ROUND_LENGTHS as len}
+		{#each ROUND_LENGTHS as len (len)}
 			<button
 				class="pill length-pill"
 				class:pill-active={roundLength === len}
@@ -148,7 +148,7 @@ const filterCount = $derived(selectedTopics.length);
 	</div>
 
 	<div class="levels" role="group" aria-label="Kies moeilijkheidsgraad">
-		{#each levels as level}
+		{#each levels as level (level.id)}
 			{@const count = countForDifficulty(level.id)}
 			{@const best = getHighScore(level.id, roundLength)}
 			<button

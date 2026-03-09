@@ -140,7 +140,7 @@ $effect(() => {
 			role="img"
 			aria-label="Antwoorden tijdlijn: {correctCount} correct, {totalCount - correctCount} fout"
 		>
-			{#each result.answers as answer}
+			{#each result.answers as answer (answer.scenarioId)}
 				<span
 					class="tick"
 					class:correct={answer.correct}
@@ -156,7 +156,7 @@ $effect(() => {
 		<div class="section">
 			<h2>Per categorie</h2>
 			<div class="cat-grid">
-				{#each categoryBreakdown as { category, correct, total }}
+				{#each categoryBreakdown as { category, correct, total } (category)}
 					<div class="cat-row">
 						<span class="cat-label">{categoryLabels[category]}</span>
 						<span class="cat-score">{correct}/{total}</span>
@@ -181,7 +181,7 @@ $effect(() => {
 			<h2>Zwakke gebieden</h2>
 			<p class="weak-hint">Je mist vaak alarmsignalen in:</p>
 			<ul class="weak-list">
-				{#each result.weakCategories as cat}
+				{#each result.weakCategories as cat (cat)}
 					<li>{categoryLabels[cat]}</li>
 				{/each}
 			</ul>
@@ -196,7 +196,7 @@ $effect(() => {
 				<span class="error-count missed-count">{missedRedFlags.length}</span>
 			</summary>
 			<div class="detail-cards">
-				{#each missedRedFlags as answer}
+				{#each missedRedFlags as answer (answer.scenarioId)}
 					{@const scenario = scenarioMap.get(answer.scenarioId)}
 					{#if scenario}
 						<div class="feedback-card missed">
@@ -222,7 +222,7 @@ $effect(() => {
 				<span class="error-count alarm-count">{falseAlarms.length}</span>
 			</summary>
 			<div class="detail-cards">
-				{#each falseAlarms as answer}
+				{#each falseAlarms as answer (answer.scenarioId)}
 					{@const scenario = scenarioMap.get(answer.scenarioId)}
 					{#if scenario}
 						<div class="feedback-card false-alarm">
