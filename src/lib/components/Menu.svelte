@@ -7,6 +7,7 @@ import {
 	type RoundFilter,
 	type RoundLength,
 } from '$lib/engine/round';
+import { withViewTransition } from '$lib/transitions';
 import type { Difficulty, StatKrTopic } from '$lib/types';
 
 interface Props {
@@ -94,7 +95,7 @@ const filterCount = $derived(selectedTopics.length);
 	<!-- Mobile filter toggle -->
 	<button
 		class="filter-toggle"
-		onclick={() => (filterExpanded = !filterExpanded)}
+		onclick={() => withViewTransition(() => (filterExpanded = !filterExpanded))}
 		aria-expanded={filterExpanded}
 		aria-controls="topic-filter"
 	>
@@ -221,6 +222,7 @@ const filterCount = $derived(selectedTopics.length);
 	gap: 0.5rem;
 	justify-content: center;
 	margin-bottom: 1rem;
+	view-transition-name: topic-filter;
 }
 
 .pill {
