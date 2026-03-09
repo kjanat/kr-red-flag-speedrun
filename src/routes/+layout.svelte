@@ -208,8 +208,10 @@ function toggleTheme() {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	padding: 1rem;
+	justify-content: flex-start;
+	padding: max(3.5rem, env(safe-area-inset-top))
+		max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
+		max(1rem, env(safe-area-inset-left));
 	transition: background-color 0.22s ease, color 0.22s ease;
 }
 
@@ -229,8 +231,14 @@ function toggleTheme() {
 
 .theme-toggle {
 	position: fixed;
-	top: 1rem;
-	right: 1rem;
+	top: max(0.75rem, env(safe-area-inset-top));
+	right: max(0.75rem, env(safe-area-inset-right));
+	z-index: 100;
+	min-height: 44px;
+	min-width: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	padding: 0.55rem 0.85rem;
 	border-radius: 999px;
 	border: 1.5px solid var(--color-border);
@@ -250,5 +258,95 @@ function toggleTheme() {
 
 .theme-toggle:active {
 	transform: translateY(0);
+}
+
+/* ── View Transitions ────────────────────────────── */
+
+@keyframes vt-fade-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes vt-fade-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes vt-slide-up-in {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+}
+
+@keyframes vt-slide-up-out {
+	to {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+}
+
+@keyframes vt-slide-down-in {
+	from {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+}
+
+@keyframes vt-slide-down-out {
+	to {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+}
+
+@keyframes vt-scale-in {
+	from {
+		opacity: 0;
+		transform: scale(0.92);
+	}
+}
+
+:global(::view-transition-group(*)) {
+	animation-duration: 0.25s;
+	animation-timing-function: ease-out;
+}
+
+/* Forwards: old slides up-out, new slides up-in */
+:global(html:active-view-transition-type(forwards)) {
+	&::view-transition-old(root) {
+		animation: 0.2s ease-out both vt-slide-up-out;
+	}
+	&::view-transition-new(root) {
+		animation: 0.25s ease-out both vt-slide-up-in;
+	}
+	/* Scenario card: crossfade + subtle scale */
+	&::view-transition-old(scenario-card) {
+		animation: 0.15s ease-out both vt-fade-out;
+	}
+	&::view-transition-new(scenario-card) {
+		animation: 0.2s 0.05s ease-out both vt-scale-in;
+	}
+}
+
+/* Backwards: old slides down-out, new slides down-in */
+:global(html:active-view-transition-type(backwards)) {
+	&::view-transition-old(root) {
+		animation: 0.2s ease-out both vt-slide-down-out;
+	}
+	&::view-transition-new(root) {
+		animation: 0.25s ease-out both vt-slide-down-in;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:global(::view-transition-group(*)),
+	:global(::view-transition-old(*)),
+	:global(::view-transition-new(*)) {
+		animation-duration: 0.01s !important;
+		animation-delay: 0s !important;
+	}
 }
 </style>

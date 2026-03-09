@@ -1,24 +1,34 @@
 <script lang="ts">
-import type { Scenario, Verdict } from '$lib/types';
+import type { Answer, Scenario, Verdict } from '$lib/types';
 
 interface Props {
 	scenario: Scenario;
 	index: number;
 	total: number;
-	onanswer: (choice: Verdict) => void;
+	onrecord: (choice: Verdict) => Answer | undefined;
+	onadvance: (answer: Answer) => void;
 }
 
-const { scenario, index, total, onanswer }: Props = $props();
+const { scenario, index, total, onrecord, onadvance }: Props = $props();
+
+const FEEDBACK_MS = 400;
 
 let elapsed = $state(0);
 let intervalId: ReturnType<typeof setInterval> | undefined;
 let startTime = $state(Date.now());
+let feedbackTimeout: ReturnType<typeof setTimeout> | undefined;
+
+/** null = accepting input; object = showing feedback */
+let feedback: { correct: boolean; expected: Verdict } | null = $state(null);
+let pendingAnswer: Answer | null = $state(null);
 
 $effect(() => {
-	// Reset timer when scenario changes (scenario.id is the dependency)
+	// Reset timer + feedback when scenario changes
 	void scenario.id;
 	startTime = Date.now();
 	elapsed = 0;
+	feedback = null;
+	pendingAnswer = null;
 
 	intervalId = setInterval(() => {
 		elapsed = Date.now() - startTime;
@@ -26,6 +36,7 @@ $effect(() => {
 
 	return () => {
 		if (intervalId !== undefined) clearInterval(intervalId);
+		if (feedbackTimeout !== undefined) clearTimeout(feedbackTimeout);
 	};
 });
 
@@ -35,11 +46,33 @@ function formatTime(ms: number): string {
 	return `${seconds}.${tenths}s`;
 }
 
+function handleAnswer(choice: Verdict) {
+	if (feedback) return;
+
+	const answer = onrecord(choice);
+	if (!answer) return;
+
+	pendingAnswer = answer;
+	feedback = { correct: answer.correct, expected: scenario.verdict };
+
+	// Pause timer
+	if (intervalId !== undefined) clearInterval(intervalId);
+
+	feedbackTimeout = setTimeout(() => {
+		const a = pendingAnswer;
+		if (!a) return;
+		onadvance(a);
+		feedback = null;
+		pendingAnswer = null;
+	}, FEEDBACK_MS);
+}
+
 function handleKey(e: KeyboardEvent) {
+	if (feedback) return;
 	if (e.key === '1' || e.key === 'a' || e.key === 'ArrowLeft') {
-		onanswer('alarm');
+		handleAnswer('alarm');
 	} else if (e.key === '2' || e.key === 's' || e.key === 'ArrowRight') {
-		onanswer('safe');
+		handleAnswer('safe');
 	}
 }
 </script>
@@ -64,21 +97,34 @@ function handleKey(e: KeyboardEvent) {
 		}</span>
 	</div>
 
-	<div class="scenario-card" aria-live="assertive" aria-atomic="true">
+	<div
+		class="scenario-card"
+		class:feedback-correct={feedback?.correct === true}
+		class:feedback-wrong={feedback !== null && !feedback.correct}
+		aria-live="assertive"
+		aria-atomic="true"
+	>
 		<p class="presentation">{scenario.presentation}</p>
+		{#if feedback && !feedback.correct}
+			<p class="correction">
+				Correct: {feedback.expected === 'alarm' ? 'ALARM' : 'SAFE'}
+			</p>
+		{/if}
 	</div>
 
 	<div class="actions">
 		<button
 			class="btn alarm"
-			onclick={() => onanswer('alarm')}
+			onclick={() => handleAnswer('alarm')}
+			disabled={feedback !== null}
 			aria-label="Alarm — patiënt doorverwijzen"
 		>
 			ALARM
 		</button>
 		<button
 			class="btn safe"
-			onclick={() => onanswer('safe')}
+			onclick={() => handleAnswer('safe')}
+			disabled={feedback !== null}
 			aria-label="Safe — patiënt is veilig"
 		>
 			SAFE
@@ -98,6 +144,7 @@ function handleKey(e: KeyboardEvent) {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
+	margin-block: auto;
 }
 
 .header {
@@ -151,8 +198,28 @@ function handleKey(e: KeyboardEvent) {
 	padding: 2.5rem 2rem;
 	min-height: 140px;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	view-transition-name: scenario-card;
+}
+
+.scenario-card.feedback-correct {
+	border-color: var(--color-success-border);
+	background: var(--color-success-bg);
+}
+
+.scenario-card.feedback-wrong {
+	border-color: var(--color-danger-border);
+	background: var(--color-danger-bg);
+}
+
+.correction {
+	font-size: 0.9rem;
+	font-weight: 700;
+	text-align: center;
+	margin-top: 0.75rem;
+	color: var(--color-danger-text);
 }
 
 .presentation {
@@ -180,7 +247,11 @@ function handleKey(e: KeyboardEvent) {
 	letter-spacing: 0.05em;
 }
 
-.btn:active {
+.btn:disabled {
+	cursor: default;
+}
+
+.btn:active:not(:disabled) {
 	transform: scale(0.97);
 }
 
@@ -190,7 +261,7 @@ function handleKey(e: KeyboardEvent) {
 	border-color: var(--color-danger-border);
 }
 
-.btn.alarm:hover {
+.btn.alarm:hover:not(:disabled) {
 	background: var(--color-danger-bg-hover);
 }
 
@@ -200,7 +271,7 @@ function handleKey(e: KeyboardEvent) {
 	border-color: var(--color-success-border);
 }
 
-.btn.safe:hover {
+.btn.safe:hover:not(:disabled) {
 	background: var(--color-success-bg-hover);
 }
 
@@ -208,5 +279,23 @@ function handleKey(e: KeyboardEvent) {
 	text-align: center;
 	font-size: 0.75rem;
 	color: var(--color-text-soft);
+}
+
+/* ── Mobile ────────────────────────────────────── */
+
+@media (hover: none) and (pointer: coarse) {
+	.keys-hint {
+		display: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.scenario-card {
+		padding: 1.5rem 1rem;
+	}
+
+	.btn {
+		padding: 1.5rem 1.25rem;
+	}
 }
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { getStats, type HistoryStats } from '$lib/engine/history';
 import type { ClinicalCategory, RoundResult, Scenario } from '$lib/types';
 
 interface Props {
@@ -53,6 +54,12 @@ const difficultyLabels = {
 	anios: 'ANIOS',
 	huisarts: 'Huisarts',
 } as const;
+
+let stats: HistoryStats | null = $state(null);
+$effect(() => {
+	// Read after mount (localStorage not available during SSR)
+	stats = getStats();
+});
 </script>
 
 <div class="results" role="region" aria-label="Resultaten">
@@ -73,6 +80,20 @@ const difficultyLabels = {
 			<span>{formatDuration(result.totalTimeMs)}</span>
 		</div>
 	</div>
+
+	{#if stats && stats.totalRoundsPlayed > 1}
+		<div class="history-strip">
+			{#if stats.highScores[result.difficulty] !== null}
+				<span>PR {difficultyLabels[result.difficulty]}: {
+						stats.highScores[result.difficulty]
+					}</span>
+			{/if}
+			<span>{stats.totalRoundsPlayed} rondes gespeeld</span>
+			{#if stats.overallAccuracy !== null}
+				<span>{stats.overallAccuracy}% nauwkeurigheid</span>
+			{/if}
+		</div>
+	{/if}
 
 	{#if result.weakCategories.length > 0}
 		<div class="section weak">
@@ -126,11 +147,10 @@ const difficultyLabels = {
 	width: 100%;
 	max-width: 600px;
 	padding: 2rem;
+	padding-bottom: 3rem;
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
-	max-height: 100dvh;
-	overflow-y: auto;
 }
 
 .title {
@@ -183,6 +203,15 @@ const difficultyLabels = {
 	margin: 0 0.5rem;
 }
 
+.history-strip {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	justify-content: center;
+	font-size: 0.8125rem;
+	color: var(--color-text-soft);
+}
+
 .section {
 	display: flex;
 	flex-direction: column;
@@ -210,9 +239,9 @@ const difficultyLabels = {
 .weak li {
 	background: var(--color-danger-bg);
 	color: var(--color-danger-text);
-	padding: 0.25rem 0.75rem;
+	padding: 0.4rem 0.85rem;
 	border-radius: 6px;
-	font-size: 0.85rem;
+	font-size: 0.875rem;
 	font-weight: 600;
 }
 
@@ -240,7 +269,7 @@ const difficultyLabels = {
 }
 
 .fb-verdict {
-	font-size: 0.8rem;
+	font-size: 0.875rem;
 	font-weight: 700;
 	color: var(--color-danger-border);
 }

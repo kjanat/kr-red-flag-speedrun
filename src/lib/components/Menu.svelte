@@ -1,5 +1,6 @@
 <script lang="ts">
 import { scenarios } from '$lib/data/scenarios';
+import { getHighScore } from '$lib/engine/history';
 import type { RoundFilter } from '$lib/engine/round';
 import type { Difficulty, StatKrTopic } from '$lib/types';
 
@@ -103,6 +104,7 @@ function buildFilter(): RoundFilter | undefined {
 	<div class="levels" role="group" aria-label="Kies moeilijkheidsgraad">
 		{#each levels as level}
 			{@const count = countForDifficulty(level.id)}
+			{@const best = getHighScore(level.id)}
 			<button
 				class="level-btn"
 				disabled={count < MIN_PLAYABLE}
@@ -110,7 +112,10 @@ function buildFilter(): RoundFilter | undefined {
 			>
 				<span class="level-name">{level.label}</span>
 				<span class="level-desc">{level.description}</span>
-				<span class="level-count">{count} scenario's</span>
+				<span class="level-meta">
+					<span>{count} scenario's</span>
+					{#if best !== null}<span class="high-score">PR: {best}</span>{/if}
+				</span>
 			</button>
 		{/each}
 	</div>
@@ -124,6 +129,7 @@ function buildFilter(): RoundFilter | undefined {
 	padding: 2rem;
 	max-width: 480px;
 	width: 100%;
+	margin-block: auto;
 }
 
 .title {
@@ -149,19 +155,22 @@ function buildFilter(): RoundFilter | undefined {
 .topic-bar {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.4rem;
+	gap: 0.5rem;
 	justify-content: center;
 	margin-bottom: 1.5rem;
 }
 
 .pill {
 	flex-shrink: 0;
-	padding: 0.3rem 0.7rem;
+	padding: 0.5rem 1rem;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
 	border: 1.5px solid var(--color-border);
 	border-radius: 999px;
 	background: transparent;
 	color: var(--color-text-muted);
-	font-size: 0.75rem;
+	font-size: 0.8125rem;
 	cursor: pointer;
 	transition: all 0.15s ease;
 	white-space: nowrap;
@@ -237,10 +246,17 @@ function buildFilter(): RoundFilter | undefined {
 	color: var(--color-text-muted);
 }
 
-.level-count {
-	font-size: 0.75rem;
+.level-meta {
+	display: flex;
+	gap: 0.75rem;
+	font-size: 0.8125rem;
 	color: var(--color-text-soft);
 	margin-top: 0.15rem;
+}
+
+.high-score {
+	color: var(--color-accent-a);
+	font-weight: 600;
 }
 
 .hint {

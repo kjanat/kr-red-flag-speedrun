@@ -50,19 +50,23 @@ export class Game {
 		this.state = { phase: 'playing', difficulty };
 	}
 
-	/** Record the player's choice and advance to next scenario or results */
-	answer(choice: Verdict): void {
-		if (this.state.phase !== 'playing') return;
-
+	/** Record the player's choice without advancing. Returns the Answer for feedback UI. */
+	recordAnswer(choice: Verdict): Answer | undefined {
+		if (this.state.phase !== 'playing') return undefined;
 		const scenario = this.currentScenario;
-		if (!scenario) return;
+		if (!scenario) return undefined;
 
 		const reactionTimeMs = performance.now() - this.scenarioStartTime;
-		const answer = processAnswer(scenario, choice, reactionTimeMs);
+		return processAnswer(scenario, choice, reactionTimeMs);
+	}
+
+	/** Commit a recorded answer and advance to next scenario or results. */
+	advance(answer: Answer): void {
+		if (this.state.phase !== 'playing') return;
+
 		this.answers = [...this.answers, answer];
 
 		if (this.currentIndex + 1 >= this.roundScenarios.length) {
-			// Round complete
 			const totalTimeMs = performance.now() - this.roundStartTime;
 			const result = computeRoundResult(
 				this.state.difficulty,
@@ -75,6 +79,12 @@ export class Game {
 			this.currentIndex++;
 			this.scenarioStartTime = performance.now();
 		}
+	}
+
+	/** Record + advance in one step (convenience for tests). */
+	answer(choice: Verdict): void {
+		const a = this.recordAnswer(choice);
+		if (a) this.advance(a);
 	}
 
 	/** Return to the main menu */

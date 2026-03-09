@@ -13,8 +13,10 @@ describe('pickScenarios', () => {
 
 	it('includes scenarios from chosen difficulty', () => {
 		const picked = pickScenarios('huisarts');
-		const expectedCount = scenarios.filter((scenario) => scenario.difficulty === 'huisarts').length;
+		const totalHuisarts = scenarios.filter((scenario) => scenario.difficulty === 'huisarts').length;
 		const huisartsCount = picked.filter((scenario) => scenario.difficulty === 'huisarts').length;
+		// All chosen-difficulty scenarios fit when pool <= 30; otherwise capped at 30
+		const expectedCount = Math.min(totalHuisarts, 30);
 		expect(huisartsCount).toBe(expectedCount);
 	});
 });
